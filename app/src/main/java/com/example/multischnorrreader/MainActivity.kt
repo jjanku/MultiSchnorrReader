@@ -10,8 +10,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.multischnorrreader.ui.MainScreen
 import com.example.multischnorrreader.ui.theme.MultiSchnorrReaderTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,14 +25,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         setContent {
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val signState by viewModel.signState.collectAsStateWithLifecycle()
+
             MultiSchnorrReaderTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+                MainScreen(
+                    uiState = uiState,
+                    signState = signState,
+                    onProbChange = viewModel::onProbChange,
+                    onPiggyChange = viewModel::onPiggyChange,
+                    onMessageChange = viewModel::onMessageChange,
+                    onReset = viewModel::onReset,
+                )
             }
         }
     }
@@ -43,23 +50,10 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         nfcAdapter.enableReaderMode(
             this,
-            {},
+            viewModel::onTagDiscovered,
             NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B
                     or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
             null
         )
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MultiSchnorrReaderTheme {
-        Greeting("Android")
     }
 }
