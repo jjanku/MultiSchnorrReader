@@ -3,13 +3,11 @@ package com.example.multischnorrreader.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -36,6 +34,16 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
+
+val ColorScheme.isLight
+    get() = this.surface.luminance() > 0.5
+
+val ColorScheme.successColor
+    get() = if (isLight) light_Green else dark_Green
+val ColorScheme.successContainer
+    get() = if (isLight) light_GreenContainer else dark_GreenContainer
+val ColorScheme.onSuccessContainer
+    get() = if (isLight) light_onGreenContainer else dark_onGreenContainer
 
 @Composable
 fun MultiSchnorrReaderTheme(
