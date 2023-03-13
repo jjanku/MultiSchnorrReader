@@ -1,5 +1,6 @@
 package com.example.multischnorrreader.ui
 
+import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -13,11 +14,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.example.multischnorrreader.SignState
 import com.example.multischnorrreader.UiState
 import com.example.multischnorrreader.card.IsoException
@@ -26,6 +29,7 @@ import com.example.multischnorrreader.crypto.Signature
 import com.example.multischnorrreader.ui.theme.MultiSchnorrReaderTheme
 import com.example.multischnorrreader.ui.theme.onSuccessContainer
 import com.example.multischnorrreader.ui.theme.successContainer
+import com.example.multischnorrreader.util.toJson
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -181,22 +185,46 @@ fun StatusDescription(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignatureCard(
     state: SignState.Success,
     modifier: Modifier = Modifier
 ) {
     val (nonce, value) = state.signature
+
+    val context = LocalContext.current
+
     OutlinedCard(
+        onClick = {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, state.toJson())
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            ContextCompat.startActivity(context, shareIntent, null)
+        },
         modifier = modifier.fillMaxWidth(),
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(
-                "Signature",
-                style = MaterialTheme.typography.headlineMedium,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Signature",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(
+                    Icons.Filled.Share,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Text(
                 "nonce",
                 style = MaterialTheme.typography.titleMedium
