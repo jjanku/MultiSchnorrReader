@@ -20,6 +20,7 @@ class NfcAppletCosigner(
 
     override suspend fun init(): Unit = withContext(ioDispatcher) {
         tech = IsoDep.get(tag)
+        tech.timeout = 10_000
         tech.connect()
         command(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT, p1 = 0x04, data = AID)
     }
