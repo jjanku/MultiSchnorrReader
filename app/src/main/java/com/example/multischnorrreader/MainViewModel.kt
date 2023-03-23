@@ -9,6 +9,9 @@ import com.example.multischnorrreader.crypto.PhoneCosigner
 import com.example.multischnorrreader.crypto.SignatureManager
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class MainViewModel : ViewModel() {
     private val signatureManager = SignatureManager(PhoneCosigner())
@@ -50,13 +53,16 @@ class MainViewModel : ViewModel() {
             val group = signatureManager.group(appletCosigner)
 
             _signState.value = SignState.Signing(attempt = 1)
+            val startTime = System.currentTimeMillis()
             signatureManager.sign(appletCosigner, bytes, prob, piggy)
                 .collectIndexed { index, signature ->
                     _signState.value = if (signature != null) {
+                        val duration = (System.currentTimeMillis() - startTime).milliseconds
                         SignState.Success(
                             group,
                             bytes,
-                            signature
+                            signature,
+                            duration,
                         )
                     } else {
                         SignState.Signing(attempt = index + 2)

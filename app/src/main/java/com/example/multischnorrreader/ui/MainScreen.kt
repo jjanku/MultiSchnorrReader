@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -30,6 +31,8 @@ import com.example.multischnorrreader.ui.theme.MultiSchnorrReaderTheme
 import com.example.multischnorrreader.ui.theme.onSuccessContainer
 import com.example.multischnorrreader.ui.theme.successContainer
 import com.example.multischnorrreader.util.toJson
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.DurationUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,10 +109,11 @@ fun MainContent(
     ) {
         StatusIndicator(state)
         Spacer(modifier = Modifier.height(16.dp))
-        if (state is SignState.Success)
+        StatusDescription(state)
+        if (state is SignState.Success) {
+            Spacer(modifier = Modifier.height(16.dp))
             SignatureCard(state)
-        else
-            StatusDescription(state)
+        }
     }
 }
 
@@ -172,6 +176,8 @@ fun StatusDescription(
         is SignState.Error -> state.msg
         is SignState.Signing ->
             if (state.attempt > 1) "Attempt #${state.attempt}" else null
+        is SignState.Success ->
+            "Finished in ${state.duration.toString(DurationUnit.MILLISECONDS)}"
         else -> null
     }
 
@@ -342,7 +348,8 @@ class StatePreviewParameterProvider : PreviewParameterProvider<SignState> {
         SignState.Success(
             group = SchemeParameters.ec.g,
             message = byteArrayOf(),
-            signature = Signature(SchemeParameters.ec.g, SchemeParameters.ec.n)
+            signature = Signature(SchemeParameters.ec.g, SchemeParameters.ec.n),
+            duration = 1700.milliseconds,
         ),
         SignState.Error(msg = IsoException(status = 0xbad0).message ?: "")
     )

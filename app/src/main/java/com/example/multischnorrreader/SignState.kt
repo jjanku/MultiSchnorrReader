@@ -2,6 +2,7 @@ package com.example.multischnorrreader
 
 import com.example.multischnorrreader.crypto.Signature
 import org.bouncycastle.math.ec.ECPoint
+import kotlin.time.Duration
 
 sealed class SignState {
     object Ready : SignState()
@@ -14,6 +15,7 @@ sealed class SignState {
         val group: ECPoint,
         val message: ByteArray,
         val signature: Signature,
+        val duration: Duration,
     ) : SignState()
 
     data class Error(val msg: String) : SignState()
