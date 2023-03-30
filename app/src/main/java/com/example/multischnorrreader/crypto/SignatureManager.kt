@@ -7,6 +7,8 @@ import org.bouncycastle.math.ec.ECPoint
 class SignatureManager(private val phoneCosigner: PhoneCosigner) {
     private var cachedCardNonce: ECPoint? = null
 
+    val hasCachedCardNonce get() = cachedCardNonce != null
+
     suspend fun group(cardCosigner: CardCosigner): ECPoint {
         if (cardCosigner.getGroup() != phoneCosigner.group) {
             cachedCardNonce = null

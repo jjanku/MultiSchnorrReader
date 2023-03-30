@@ -173,11 +173,13 @@ fun StatusDescription(
         is SignState.Success -> "Success"
     }
     val description = when (state) {
-        is SignState.Error -> state.msg
+        is SignState.Error ->
+            state.msg + if (state.hasCachedNonce) ", cached nonce" else ""
         is SignState.Signing ->
             if (state.attempt > 1) "Attempt #${state.attempt}" else null
         is SignState.Success ->
-            "Finished in ${state.duration.toString(DurationUnit.MILLISECONDS)}"
+            "Finished in ${state.duration.toString(DurationUnit.MILLISECONDS)}" +
+                    if (state.hasCachedNonce) ", cached nonce" else ""
         else -> null
     }
 
@@ -350,8 +352,12 @@ class StatePreviewParameterProvider : PreviewParameterProvider<SignState> {
             message = byteArrayOf(),
             signature = Signature(SchemeParameters.ec.g, SchemeParameters.ec.n),
             duration = 1700.milliseconds,
+            hasCachedNonce = true,
         ),
-        SignState.Error(msg = IsoException(status = 0xbad0).message ?: "")
+        SignState.Error(
+            msg = IsoException(status = 0xbad0).message ?: "",
+            hasCachedNonce = false,
+        )
     )
 }
 

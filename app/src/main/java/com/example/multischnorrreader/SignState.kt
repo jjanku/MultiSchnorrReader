@@ -16,7 +16,11 @@ sealed class SignState {
         val message: ByteArray,
         val signature: Signature,
         val duration: Duration,
+        val hasCachedNonce: Boolean,
     ) : SignState()
 
-    data class Error(val msg: String) : SignState()
+    data class Error(
+        val msg: String,
+        val hasCachedNonce: Boolean,
+    ) : SignState()
 }

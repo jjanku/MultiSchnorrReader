@@ -63,13 +63,17 @@ class MainViewModel : ViewModel() {
                             bytes,
                             signature,
                             duration,
+                            signatureManager.hasCachedCardNonce,
                         )
                     } else {
                         SignState.Signing(attempt = index + 2)
                     }
                 }
         } catch (e: Exception) {
-            _signState.value = SignState.Error(e.message ?: "Unknown error")
+            _signState.value = SignState.Error(
+                e.message ?: "Unknown error",
+                signatureManager.hasCachedCardNonce,
+            )
         } finally {
             appletCosigner.finish()
         }
