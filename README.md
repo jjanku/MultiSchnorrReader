@@ -6,6 +6,14 @@ This is the card reader app for [MultiSchnorrApplet](https://github.com/jjanku/M
 
 ## Build
 
-Run `./gradlew assembleDebug` to build the debug APK; the output is located in `./app/build/outputs/`.
+The easiest option is to build the project in [Android Studio](https://developer.android.com/studio).
+
+Assuming Android SDK is setup properly, the app can also be built from the command line:
+
+```bash
+./gradlew assembleDebug
+```
+
+The output is located in `./app/build/outputs/`.
 
 Alternatively, grab a pre-built APK from the _Releases_ section.
