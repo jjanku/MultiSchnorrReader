@@ -12,9 +12,9 @@ data class Signature(val nonce: ECPoint, val value: BigInteger) {
         challengeNonce: ECPoint = nonce
     ): Boolean {
         val challenge = MessageDigest.getInstance("SHA-256").run {
+            update(challengeNonce.getEncoded(false))
             update(challengeKey.getEncoded(false))
             update(msg)
-            update(challengeNonce.getEncoded(false))
             BigInteger(1, digest())
         }
         return value * SchemeParameters.ec.g == nonce + challenge * key
